@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" 
+    integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" 
+    crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" 
+    integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" 
+    crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>emuu</title>
+    <style>
+        /* Custom HTMX indicator styling */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: inline-block;
+        }
+        .htmx-request.htmx-indicator {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body hx-ext="response-targets" class="min-h-screen bg-white font-sans text-gray-900 flex flex-col overflow-y-scroll">
+
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-3xl w-full mx-auto py-8 px-4 flex-grow flex flex-col gap-8">
+
+        <h2 class="text-lg font-bold text-blue-800 mb-1">Posts</h2>
+
+
+        {% for post in posts %}
+            <div class="bg-gray-50 border border-gray-300 p-5 rounded-sm">
+                <p>id: {{ post[0] }}</p>
+                <p>username: {{ post[1] }}</p>
+                <p>content: {{ post[2] }}</p>
+                <p>time: {{ post[3] }}</p>
+            </div>
+        {% endfor %}
+
+
+    
+    </main>
+
+</body>
+</html>
