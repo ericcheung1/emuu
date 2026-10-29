@@ -2,6 +2,10 @@
 
 A quick place to note changes
 
+## 2026-10-28
+- [x] Added a simple password system with SHA256 hashing and no salting as of now
+- [x] Added POST and GET "/signup" routes to support new password feature
+
 ## 2026-10-18
 - [x] Set up a working loop of login then post to main feed with username only
 

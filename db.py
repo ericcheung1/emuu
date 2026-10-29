@@ -20,6 +20,15 @@ def init_db():
             );
         """
         con.execute(query)
+
+        query2 = """
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INTEGER PRIMARY KEY,
+                username TEXT NOT NULL,
+                hashed_password TEXT NOT NULL
+            );
+        """
+        con.execute(query2)
         con.commit()
 
     return con

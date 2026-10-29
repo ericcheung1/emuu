@@ -1,3 +1,4 @@
+import hashlib
 from typing import Annotated
 
 from fastapi import FastAPI, Request, Form, Response, status, Cookie
@@ -18,7 +19,6 @@ def show_feed(request: Request, session_id: Annotated[str | None, Cookie()] = No
 
     query = """
         SELECT * FROM posts ORDER BY post_time DESC;
-
     """
     cur = con.cursor()
     res = cur.execute(query)
@@ -71,14 +71,61 @@ def login_page(request: Request):
 
 
 @app.post("/login")
-def login(response: Response, username: str = Form(...)):
+def login(response: Response, username: str = Form(...), password: str = Form(...)):
 
     if isinstance(username, str):
-        response.set_cookie(key="session_id", value=username, max_age=3600, path="/")
 
-        response.headers["HX-Refresh"] = "true"
+        hashed_password_hex = hashlib.sha256(password.encode()).hexdigest()
+        
+        query = "SELECT * FROM users WHERE hashed_password = ? AND username = ?;"
+        
+        cur = con.cursor()
+        result = cur.execute(query, (hashed_password_hex, username))
+        print(cur)
+        print(result)
+        row_result = result.fetchone()
+        print(f"row_result: {row_result}")
+        print(f"password, '{password}'")
+        print(f"hashed_password, '{hashed_password_hex}'")
+        print(f"username, '{username}'")
+
+        if row_result:
+            response.set_cookie(key="session_id", value=username, max_age=3600, path="/")
+            response.headers["HX-Refresh"] = "true"
+        elif not row_result:
+            return RedirectResponse("/signup", status_code=status.HTTP_303_SEE_OTHER)
+        else:
+            return {"error": "failed to log in, refresh to try again"}
+    
     else:
         return {"message": "failed to log in, refresh to try again"}
+
+
+@app.get("/signup")
+def signup_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="signup.html"
+    )
+
+
+@app.post("/signup")
+def signup(username: str = Form(...), password: str = Form(...)):
+    
+    if isinstance(username, str) and isinstance(password, str):
+
+        hashed_password_hex = hashlib.sha256(password.encode()).hexdigest()
+        query = "INSERT INTO users (username, hashed_password) VALUES (?, ?)"
+        cur = con.cursor()
+        cur.execute(query, (username, hashed_password_hex,))
+        con.commit()
+        print(f"password, '{password}'")
+        print(f"hashed_password, '{hashed_password_hex}'")
+        print(f"username, '{username}'")
+
+        return {"message": "successfully signed up"}
+
+    else:
+        return {"error": "failed to sign up"}
 
 
 @app.post("/logout")
